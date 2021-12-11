@@ -1,0 +1,35 @@
+version: "3.9"
+services:
+  cegente:
+    container_name: cegente_apache
+    build: .
+    ports:
+    - "80:80"
+    - "443:443"
+    volumes:
+    - .:/var/www/html
+    links: 
+    - db
+  db:
+    container_name: cegente_db
+    image: mysql:5.7
+    volumes:
+    - ./.docker/dbdata:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: 123456
+      MYSQL_DATABASE: cegente
+      MYSQL_USER: cegente
+      MYSQL_PASSWORD: 123456
+  phpmyadmin:
+    depends_on:
+      - db
+    container_name: cegente_phpmyadmin
+    links:
+      - db
+    image: phpmyadmin/phpmyadmin
+    restart: always
+    ports:
+      - 8081:80
+    environment:
+      PMA_HOST: db
+      MYSQL_ROOT_PASSWORD: 123456
